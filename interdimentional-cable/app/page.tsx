@@ -1,18 +1,22 @@
 "use client";
 import Image, { StaticImageData } from 'next/image'
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useReducer, useContext } from "react";
 
+//import { GlobalContext, GlobalDispatchContext} from './storage/GlobalContext';
+import {IGlobalStorage, useGobalDispatch, useGobalStorage, GlobalContext} from './storage/GlobalProvider'
 
+import GlobalProvider from './storage/GlobalProvider';
 import VideoScreen from './components/organisms/Screen'
 import DetailBar from './components/organisms/DetailBar';
 
-import programming, { IChannel, IVideo } from './programming'
+import   { IChannel, IVideo } from './programming'
 
 
 export default function Home() {
-  const [channelIdSelected, setChannelIdSelected] = useState(0);
+  const {programming,currentChannelIndex} = useGobalStorage();
+  const GlobalDispatchContext = useGobalDispatch();
   const [player, setPlayer] = useState(null);
-  const currentChannel: IChannel = programming.channelList[channelIdSelected]
+  const currentChannel: IChannel = programming.channelList[currentChannelIndex]
   const [youtubeIDIndex, setyoutubeID] = useState(0);
 
   const handleUserKeyPress = (event: { key: any, keyCode: number }) => {
@@ -22,15 +26,11 @@ export default function Home() {
   };
 
   const nextChannelHandler = () => {
-    let nextIndex = channelIdSelected + 1
-    nextIndex = nextIndex > (programming.channelList.length - 1) ? 0 : nextIndex;
-    setChannelIdSelected(nextIndex)
+       GlobalDispatchContext({type:"NEXT_CHANNEL"})
   }
 
   const previusChannelHandler = () => {
-    let nextIndex = channelIdSelected - 1
-    nextIndex = nextIndex < 0 ? (programming.channelList.length - 1) : nextIndex;
-    setChannelIdSelected(nextIndex)
+    GlobalDispatchContext({type:"PREVIOUS_CHANNEL"})
 
   }
 
@@ -50,7 +50,7 @@ export default function Home() {
     // const id = setTimeout(() => {
     //   setpy(player)
     //   }, 10000);
-   
+
     window.addEventListener('keydown', handleUserKeyPress);
     return () => {
       window.removeEventListener('keydown', handleUserKeyPress);
@@ -58,17 +58,21 @@ export default function Home() {
   }, [handleUserKeyPress, player]);
 
   return (
-    <main className="container flex flex-col h-screen  min-w-full max-h-screen   min-h-screen bg-indigo-500">
-      <VideoScreen
-        //key={currentChannel.name} 
-        setPlayer={setPlayer} videos={currentChannel.videos} />
-      <DetailBar
-        channel={currentChannel}
-        video={currentChannel.videos[youtubeIDIndex]}
-        nextCallback={nextChannelHandler}
-        previusCallback={previusChannelHandler} />
-    </main>
+
+      <main className="container flex flex-col h-screen  min-w-full max-h-screen   min-h-screen bg-indigo-500">
+        <VideoScreen
+          //key={currentChannel.name} 
+          setPlayer={setPlayer} videos={currentChannel.videos} />
+        <DetailBar
+          channel={currentChannel}
+          video={currentChannel.videos[youtubeIDIndex]}
+          nextCallback={nextChannelHandler}
+          previusCallback={previusChannelHandler} />
+      </main>
   )
 }
+
+
+
 
 
