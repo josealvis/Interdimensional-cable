@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useReducer, useContext } from "react"
 //import { GlobalContext, GlobalDispatchContext} from './storage/GlobalContext';
 import {IGlobalStorage, useGobalDispatch, useGobalStorage, GlobalContext} from './storage/GlobalProvider'
 
-import GlobalProvider from './storage/GlobalProvider';
+
 import VideoScreen from './components/organisms/Screen'
 import DetailBar from './components/organisms/DetailBar';
 
